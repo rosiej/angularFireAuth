@@ -1,0 +1,12 @@
+
+<button routerLink="/login" routerLinkActive="active">Login</button>
+<button routerLink="/registration" routerLinkActive="active">Register</button><br>
+<input type="email" placeholder="email" [(ngModel)]="credentials.email">
+<input type="password" placeholder="password" [(ngModel)]="credentials.password">
+<div>
+  <button (click)="login()">Login</button>
+  <button (click)="resetPassword()">I forgot my password</button>
+</div>
+
+<p>{{ credentials | json }}</p>
+<router-outlet></router-outlet>
