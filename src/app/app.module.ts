@@ -11,16 +11,22 @@ import {AuthService} from './auth.service';
 import {AuthGuardService} from './auth-guard.service';
 import { LoginComponent } from './login/login.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { RegistrationComponent } from './registration/registration.component';
 
 const ROUTES = [
   {
     path: '',
-    redirectTo: '/login',
+    redirectTo: '/registration',
     pathMatch: 'full'
   },
   {
     path: 'login',
-    component: LoginComponent },
+    component: LoginComponent
+  },
+  {
+    path: 'registration',
+    component: RegistrationComponent
+  },
   {
     path: 'dashboard',
     component: DashboardComponent,
@@ -31,7 +37,8 @@ const ROUTES = [
   declarations: [
     AppComponent,
     LoginComponent,
-    DashboardComponent
+    DashboardComponent,
+    RegistrationComponent
   ],
   imports: [
     AngularFireModule.initializeApp(environment.firebaseConfig),
