@@ -12,6 +12,7 @@ import {AuthGuardService} from './auth-guard.service';
 import { LoginComponent } from './login/login.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { RegistrationComponent } from './registration/registration.component';
+import {HttpClientModule} from '@angular/common/http';
 
 const ROUTES = [
   {
@@ -45,9 +46,10 @@ const ROUTES = [
     BrowserModule,
     FormsModule,
     RouterModule.forRoot(ROUTES),
-    AngularFireAuthModule
+    AngularFireAuthModule,
+    HttpClientModule
   ],
-  providers: [AuthService, AuthGuardService],
+  providers: [AuthService, AuthGuardService,],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
