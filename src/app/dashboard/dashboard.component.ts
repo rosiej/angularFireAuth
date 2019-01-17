@@ -7,17 +7,22 @@ import {AuthService} from '../auth.service';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit{
 
-  user = this.authService.user;
+  user;
 
   constructor(private router: Router, public authService: AuthService) {
+  }
+
+  ngOnInit(): void {
+    this.user = this.authService.userFromDb;
   }
 
   logout() {
     this.authService.logout()
       .then(() => this.router.navigate(['/login']));
   }
+
 
 
 }

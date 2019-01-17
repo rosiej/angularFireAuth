@@ -1,13 +1,15 @@
+<div class="container">
+  <button routerLink="/login" routerLinkActive="active">Login</button>
+  <button routerLink="/registration" routerLinkActive="active">Register</button>
+  <br>
+  <input type="email" placeholder="email" [(ngModel)]="credentials.email">
+  <input type="password" placeholder="password" [(ngModel)]="credentials.password">
+  <input type="text" placeholder="name" [(ngModel)]="credentials.name">
+  <div>
 
-<button routerLink="/login" routerLinkActive="active">Login</button>
-<button routerLink="/registration" routerLinkActive="active">Register</button><br>
-<input type="email" placeholder="email" [(ngModel)]="credentials.email">
-<input type="password" placeholder="password" [(ngModel)]="credentials.password">
-<input type="text" placeholder="name" [(ngModel)]="credentials.name">
-<div>
-
-  <button (click)="register()">Register</button>
+    <button (click)="register()">Register</button>
+  </div>
+  <h3 style="color: green;">{{ registerInfo }}</h3>
+  <p>{{ credentials | json }}</p>
+  <router-outlet></router-outlet>
 </div>
-<h3 style="color: green;">{{ registerInfo }}</h3>
-<p>{{ credentials | json }}</p>
-<router-outlet></router-outlet>

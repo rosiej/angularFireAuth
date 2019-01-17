@@ -1,19 +1,21 @@
 <!--<div>-->
-  <!--<pre>{{ user | json }}</pre>-->
-  <!--<button (click)="logout()">LOGOUT</button>-->
+<!--<pre>{{ user | json }}</pre>-->
+<!--<button (click)="logout()">LOGOUT</button>-->
 <!--</div>-->
-<div class="card" style="width: 18rem;">
-  <!--<img src="{{user.userPicture}}" class="card-img-top" alt="brak awatara">-->
-  <div class="card-body">
-    <h5 class="card-title" *ngIf="authService.userFromDb" >{{authService.userFromDb.name}}</h5>
-    <p class="card-text">Witaj na swoim profilu</p>
+<div class="container">
+  <div class="card" style="width: 18rem;">
+    <!--<img src="{{user.userPicture}}" class="card-img-top" alt="brak awatara">-->
+    <div class="card-body">
+      <h5 class="card-title" *ngIf="authService.userFromDb">{{authService.userFromDb.name}}</h5>
+      <p class="card-text">Witaj na swoim profilu</p>
+    </div>
+    <ul class="list-group list-group-flush" *ngIf="authService.userFromDb">
+      <li class="list-group-item">twój uid to: {{authService.userFromDb.uid}}</li>
+      <li class="list-group-item">twój e-mail to: {{authService.userFromDb.email}}</li>
+    </ul>
+    <div>
+      <button class="alert-danger" routerLink="/login" routerLinkActive="active" (click)="logout()">Log out</button>
+    </div>
   </div>
-  <ul class="list-group list-group-flush" *ngIf="authService.userFromDb" >
-    <li class="list-group-item">twój uid to: {{authService.userFromDb.uid}}</li>
-    <li class="list-group-item">twój e-mail to: {{authService.userFromDb.email}}</li>
-  </ul>
-  <div>
-    <button class="alert-danger" routerLink="/login" routerLinkActive="active" (click)="logout()" >Log out</button>
-  </div>
+  <router-outlet></router-outlet>
 </div>
-<router-outlet></router-outlet>

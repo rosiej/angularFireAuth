@@ -4,7 +4,6 @@ import {User} from 'firebase';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import * as firebase from 'firebase/app';
-import {Router} from '@angular/router';
 
 
 export interface Credentials {
@@ -29,7 +28,7 @@ export class AuthService implements OnInit {
   userFromDb: Credentials;
   usersListFromDb: Array<Credentials> = [];
 
-  constructor(private fireAuth: AngularFireAuth, private http: HttpClient, private router: Router) {
+  constructor(private fireAuth: AngularFireAuth, private http: HttpClient) {
   }
 
   ngOnInit(): void {
@@ -59,11 +58,9 @@ export class AuthService implements OnInit {
   loginWithGoogle() {
     this.getUserListFromDb();
     return this.fireAuth.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
-      .then(() => {
+      .then((user) => {
+        this.userFromDb = user.user;
         this.saveUserInDb(this.user.email, this.user.displayName, this.user);
-        this.getUserFromDb(this.user.email).subscribe(loggedUser => {
-          this.userFromDb = loggedUser;
-        });
       })
       .catch(err => {
         console.log(err);
@@ -93,8 +90,9 @@ export class AuthService implements OnInit {
   }
 
   saveUserInDb(email: string, name: string, user: User) {
+    const uid = user.uid;
+    this.userFromDb = {email, name, uid};
     if (!this.usersListFromDb.find(userFromList => userFromList.email === email)) {
-      const uid = user.uid;
       this.userToDb = {email, name, uid};
       this.http.post(this.URL_DB, this.userToDb, {params: this.param})
         .subscribe(userSaved => {
