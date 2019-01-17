@@ -9,7 +9,7 @@
     <p class="card-text">Witaj na swoim profilu</p>
   </div>
   <ul class="list-group list-group-flush" *ngIf="authService.userFromDb" >
-    <li class="list-group-item">{{authService.userFromDb.name}}</li>
+    <li class="list-group-item">twój uid to: {{authService.userFromDb.uid}}</li>
     <li class="list-group-item">twój e-mail to: {{authService.userFromDb.email}}</li>
   </ul>
   <div>

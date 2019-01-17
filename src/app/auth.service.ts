@@ -7,6 +7,7 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 
 export interface Credentials {
   _id?: string;
+  uid?: string;
   email: string;
   password?: string;
   name?: string;
@@ -24,6 +25,7 @@ export class AuthService {
 
   userToDb: Credentials;
   userFromDb: Credentials;
+
 
   constructor(private fireAuth: AngularFireAuth, private http: HttpClient) {
   }
@@ -47,8 +49,8 @@ export class AuthService {
 
   register({email, password, name}: Credentials) {
     return this.fireAuth.auth.createUserWithEmailAndPassword(email, password)
-      .then(() => {
-        this.saveUserInDb(email, name);
+      .then((user) => {
+        this.saveUserInDb(email, name, user.user);
       });
   }
 
@@ -60,8 +62,9 @@ export class AuthService {
     return this.http.get<Credentials>(this.URL_DB, {params: userParams});
   }
 
-  saveUserInDb(email: string, name: string) {
-    this.userToDb = {email,  name};
+  saveUserInDb(email: string, name: string, user: User) {
+    const uid = user.uid;
+    this.userToDb = {email,  name, uid};
     this.http.post(this.URL_DB, this.userToDb, {params: this.param})
       .subscribe(user => {
         console.log(user);
