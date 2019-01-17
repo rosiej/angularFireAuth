@@ -16,7 +16,7 @@ export class LoginComponent {
 
   registerInfo = '';
 
-  constructor(private router: Router, private authService: AuthService) {
+  constructor(private router: Router, public authService: AuthService) {
   }
 
   login() {
@@ -28,5 +28,11 @@ export class LoginComponent {
 
   resetPassword() {
     this.authService.resetPassword(this.credentials).then();
+  }
+
+  loginWithGoogle() {
+    this.authService.loginWithGoogle().then(
+      () => this.router.navigate(['/dashboard'])
+    ).catch( err => console.log(err.meaning));
   }
 }

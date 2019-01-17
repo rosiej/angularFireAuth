@@ -3,6 +3,8 @@ import {Observable} from 'rxjs';
 import {User} from 'firebase';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {HttpClient, HttpParams} from '@angular/common/http';
+import * as firebase from 'firebase/app';
+import {Router} from '@angular/router';
 
 
 export interface Credentials {
@@ -25,9 +27,7 @@ export class AuthService {
 
   userToDb: Credentials;
   userFromDb: Credentials;
-
-
-  constructor(private fireAuth: AngularFireAuth, private http: HttpClient) {
+  constructor(private fireAuth: AngularFireAuth, private http: HttpClient, private router: Router) {
   }
 
   get user(): User | null {
@@ -36,14 +36,29 @@ export class AuthService {
 
   login({email, password}: Credentials) {
     return this.fireAuth.auth.signInWithEmailAndPassword(email, password)
-      .then(() => {
+      .then((result) => {
         this.getUserFromDb(email).subscribe(user => {
           this.userFromDb = user;
         });
       }).then(() => {
         console.log(this.userFromDb.name);
-      }).catch( err => {
-            console.log(err);
+      }).catch(err => {
+        console.log(err);
+      });
+  }
+
+  loginWithGoogle() {
+    return this.fireAuth.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+      .then(() => {
+        this.saveUserInDb(this.user.email, this.user.displayName, this.user);
+        this.getUserFromDb(this.user.email).subscribe(loggedUser => {
+          this.userFromDb = loggedUser;
+        });
+      }).then(() => {
+        this.router.navigate(['/dashboard']);
+      })
+      .catch( err => {
+        console.log(err);
       });
   }
 
@@ -64,7 +79,7 @@ export class AuthService {
 
   saveUserInDb(email: string, name: string, user: User) {
     const uid = user.uid;
-    this.userToDb = {email,  name, uid};
+    this.userToDb = {email, name, uid};
     this.http.post(this.URL_DB, this.userToDb, {params: this.param})
       .subscribe(user => {
         console.log(user);
@@ -78,8 +93,10 @@ export class AuthService {
     });
   }
 
-  resetPassword(credentials: {email: string }) {
+  resetPassword(credentials: { email: string }) {
     return this.fireAuth.auth.sendPasswordResetEmail(credentials.email);
 
   }
+
+
 }
