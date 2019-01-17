@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {User} from 'firebase';
 import {AngularFireAuth} from '@angular/fire/auth';
@@ -19,7 +19,7 @@ export interface Credentials {
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
+export class AuthService implements OnInit {
 
   readonly authState$: Observable<User | null> = this.fireAuth.authState;
   readonly URL_DB = 'https://api.mlab.com/api/1/databases/users_db/collections/users';
@@ -27,7 +27,13 @@ export class AuthService {
 
   userToDb: Credentials;
   userFromDb: Credentials;
+  usersListFromDb: Array<Credentials> = [];
+
   constructor(private fireAuth: AngularFireAuth, private http: HttpClient, private router: Router) {
+  }
+
+  ngOnInit(): void {
+    this.getUserListFromDb();
   }
 
   get user(): User | null {
@@ -35,11 +41,14 @@ export class AuthService {
   }
 
   login({email, password}: Credentials) {
+    this.getUserListFromDb();
+    this.userFromDb = this.usersListFromDb.find(o => o.email === email);
     return this.fireAuth.auth.signInWithEmailAndPassword(email, password)
       .then((result) => {
         this.getUserFromDb(email).subscribe(user => {
           this.userFromDb = user;
         });
+        console.log(this.usersListFromDb);
       }).then(() => {
         console.log(this.userFromDb.name);
       }).catch(err => {
@@ -48,16 +57,15 @@ export class AuthService {
   }
 
   loginWithGoogle() {
+    this.getUserListFromDb();
     return this.fireAuth.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
       .then(() => {
         this.saveUserInDb(this.user.email, this.user.displayName, this.user);
         this.getUserFromDb(this.user.email).subscribe(loggedUser => {
           this.userFromDb = loggedUser;
         });
-      }).then(() => {
-        this.router.navigate(['/dashboard']);
       })
-      .catch( err => {
+      .catch(err => {
         console.log(err);
       });
   }
@@ -77,13 +85,24 @@ export class AuthService {
     return this.http.get<Credentials>(this.URL_DB, {params: userParams});
   }
 
-  saveUserInDb(email: string, name: string, user: User) {
-    const uid = user.uid;
-    this.userToDb = {email, name, uid};
-    this.http.post(this.URL_DB, this.userToDb, {params: this.param})
-      .subscribe(user => {
-        console.log(user);
+  getUserListFromDb() {
+    this.http.get<Array<Credentials>>(this.URL_DB, {params: this.param})
+      .subscribe(list => {
+        this.usersListFromDb = list;
       });
+  }
+
+  saveUserInDb(email: string, name: string, user: User) {
+    if (!this.usersListFromDb.find(userFromList => userFromList.email === email)) {
+      const uid = user.uid;
+      this.userToDb = {email, name, uid};
+      this.http.post(this.URL_DB, this.userToDb, {params: this.param})
+        .subscribe(userSaved => {
+          console.log(userSaved);
+          console.log(this.usersListFromDb);
+        });
+    }
+
   }
 
   logout() {
