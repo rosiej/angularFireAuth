@@ -1,4 +1,4 @@
-import {Injectable, OnInit} from '@angular/core';
+import {Inject, Injectable, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {User} from 'firebase';
 import {AngularFireAuth} from '@angular/fire/auth';
@@ -12,6 +12,7 @@ export interface Credentials {
   email: string;
   password?: string;
   name?: string;
+  picture?: string;
 }
 
 
@@ -48,8 +49,8 @@ export class AuthService implements OnInit {
           this.userFromDb = user;
         });
         console.log(this.usersListFromDb);
-      }).then(() => {
-        console.log(this.userFromDb.name);
+      // }).then(() => {
+      //   console.log(this.userFromDb.name);
       }).catch(err => {
         console.log(err);
       });
@@ -60,17 +61,18 @@ export class AuthService implements OnInit {
     return this.fireAuth.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
       .then((user) => {
         this.userFromDb = user.user;
-        this.saveUserInDb(this.user.email, this.user.displayName, this.user);
+        const reader = new FileReader();
+        this.saveUserInDb(this.user.email, this.user.displayName, this.user.photoURL, this.user);
       })
       .catch(err => {
         console.log(err);
       });
   }
 
-  register({email, password, name}: Credentials) {
+  register({email, password, name, picture}: Credentials) {
     return this.fireAuth.auth.createUserWithEmailAndPassword(email, password)
       .then((user) => {
-        this.saveUserInDb(email, name, user.user);
+        this.saveUserInDb(email, name, picture, user.user);
       });
   }
 
@@ -89,11 +91,11 @@ export class AuthService implements OnInit {
       });
   }
 
-  saveUserInDb(email: string, name: string, user: User) {
+  saveUserInDb(email: string, name: string, picture: string, user: User) {
     const uid = user.uid;
     this.userFromDb = {email, name, uid};
     if (!this.usersListFromDb.find(userFromList => userFromList.email === email)) {
-      this.userToDb = {email, name, uid};
+      this.userToDb = {email, name, uid, picture};
       this.http.post(this.URL_DB, this.userToDb, {params: this.param})
         .subscribe(userSaved => {
           console.log(userSaved);

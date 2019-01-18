@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {AuthService} from '../auth.service';
 
@@ -14,15 +14,30 @@ export class RegistrationComponent {
     email: '',
     password: '',
     name: '',
-    picture: File
+    picture: ''
   };
-
   registerInfo = '';
-  constructor(private router: Router, private authService: AuthService) { }
+
+  constructor(private router: Router, private authService: AuthService) {
+  }
 
   register() {
     this.authService.register(this.credentials)
       .then(() => this.registerInfo = 'account created')
       .catch(err => console.log(err));
   }
-}
+
+
+  uploadImage(event) {
+    console.log(event);
+    if (event.target.files[0]) {
+      const reader = new FileReader();
+      reader.readAsDataURL(event.target.files[0]);
+      reader.onload = () => {
+        this.credentials.picture = reader.result.toString();
+        };
+
+      }
+    console.log(this.credentials.picture);
+    }
+  }

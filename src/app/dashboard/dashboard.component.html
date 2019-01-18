@@ -7,6 +7,8 @@
     <!--<img src="{{user.userPicture}}" class="card-img-top" alt="brak awatara">-->
     <div class="card-body">
       <h5 class="card-title" *ngIf="authService.userFromDb">{{authService.userFromDb.name}}</h5>
+      <img *ngIf="isUrl" [src]="image" align="middle" height="200" >
+      <img *ngIf="authService.userFromDb && !isUrl" [src]="authService.userFromDb.picture" height="200" >
       <p class="card-text">Witaj na swoim profilu</p>
     </div>
     <ul class="list-group list-group-flush" *ngIf="authService.userFromDb">
