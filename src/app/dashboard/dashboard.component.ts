@@ -36,4 +36,7 @@ export class DashboardComponent implements OnInit {
   }
 
 
+  changePassword() {
+    this.authService.changePassword();
+  }
 }

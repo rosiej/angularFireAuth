@@ -118,4 +118,7 @@ export class AuthService implements OnInit {
   }
 
 
+  changePassword() {
+    this.fireAuth.auth.sendPasswordResetEmail(this.fireAuth.auth.currentUser.email);
+  }
 }
